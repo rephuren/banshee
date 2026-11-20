@@ -123,3 +123,82 @@ fn a_broken_rule_is_reported_not_swallowed() {
         .contains("base64"));
     std::fs::remove_dir_all(dir).ok();
 }
+
+#[test]
+fn yara_finds_exactly_the_planted_samples() {
+    let (code, stdout, _) = banshee(&[
+        "yara",
+        "--rules",
+        "rules/yara",
+        "examples/samples",
+        "--json",
+    ]);
+    assert_eq!(code, 1);
+    let v: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+    assert_eq!(v["rules_loaded"], 4);
+    assert_eq!(v["skipped"].as_array().unwrap().len(), 0);
+    assert_eq!(v["files_scanned"], 5);
+    let mut hits: Vec<(String, String)> = v["matches"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|m| {
+            let f = m["file"]
+                .as_str()
+                .unwrap()
+                .rsplit('/')
+                .next()
+                .unwrap()
+                .to_string();
+            (f, m["rule"].as_str().unwrap().to_string())
+        })
+        .collect();
+    hits.sort();
+    assert_eq!(
+        hits,
+        vec![
+            (
+                "dropper.sh".to_string(),
+                "banshee_shell_dropper_script".to_string()
+            ),
+            (
+                "fake_pe.bin".to_string(),
+                "banshee_pe_with_injection_apis".to_string()
+            ),
+            ("note.txt".to_string(), "banshee_test_marker".to_string()),
+            (
+                "tiny.elf".to_string(),
+                "banshee_elf_header_stub".to_string()
+            ),
+        ]
+    );
+    assert_eq!(v["techniques"]["T1055"], 1);
+}
+
+#[test]
+fn yara_reports_unsupported_rule_files_and_exits_zero_when_clean() {
+    let dir = std::env::temp_dir().join(format!("banshee-yara-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(
+        dir.join("bad.yar"),
+        "import \"pe\"\nrule x { condition: true }",
+    )
+    .unwrap();
+    std::fs::write(
+        dir.join("ok.yar"),
+        "rule nope { strings: $a = \"zzzzqq\" condition: $a }",
+    )
+    .unwrap();
+    let (code, stdout, _) = banshee(&[
+        "yara",
+        "--rules",
+        dir.to_str().unwrap(),
+        "examples/samples/clean.txt",
+    ]);
+    std::fs::remove_dir_all(&dir).ok();
+    assert_eq!(code, 0);
+    assert!(
+        stdout.contains("skipped") && stdout.contains("import"),
+        "{stdout}"
+    );
+}

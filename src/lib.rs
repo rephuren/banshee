@@ -3,3 +3,4 @@
 
 pub mod attack;
 pub mod sigma;
+pub mod yara;
