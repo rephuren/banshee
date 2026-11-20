@@ -1,0 +1,24 @@
+title: Remote script piped straight into a shell
+id: banshee-0002
+status: experimental
+description: A download piped into sh or bash runs code nobody has read. Common in install instructions, also in intrusions.
+author: misxnthropy
+level: high
+tags:
+  - attack.execution
+  - attack.t1059.004
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  fetch:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+  shell:
+    CommandLine|contains:
+      - '| sh'
+      - '| bash'
+      - '|sh'
+      - '|bash'
+  condition: fetch and shell

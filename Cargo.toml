@@ -1,0 +1,15 @@
+[package]
+name = "banshee"
+version = "0.1.0"
+edition = "2021"
+description = "Sigma and YARA rule engine with MITRE ATT&CK summaries"
+license = "MIT"
+
+[dependencies]
+regex = "1"
+serde_json = "1"
+serde_yaml = "0.9"
+
+[profile.release]
+lto = true
+strip = true
