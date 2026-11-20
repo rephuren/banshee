@@ -1,0 +1,22 @@
+title: PowerShell started with an encoded command
+id: banshee-0001
+status: experimental
+description: Encoded command lines hide what runs from anyone reading process logs. Legitimate software uses them too, so check the parent process.
+author: misxnthropy
+level: medium
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  image:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  encoded:
+    CommandLine|contains:
+      - ' -enc '
+      - ' -encodedcommand '
+  condition: image and encoded

@@ -1,0 +1,23 @@
+title: New cron job written outside the package manager
+id: banshee-0004
+status: experimental
+description: Cron entries survive reboots, so they are a simple persistence spot. Package managers add cron files legitimately; the filter excludes them.
+author: misxnthropy
+level: medium
+tags:
+  - attack.persistence
+  - attack.t1053.003
+logsource:
+  category: file_event
+  product: linux
+detection:
+  cron:
+    TargetFilename|startswith:
+      - '/etc/cron.d/'
+      - '/var/spool/cron/'
+  pkg:
+    Image|endswith:
+      - '/dpkg'
+      - '/rpm'
+      - '/apt'
+  condition: cron and not pkg

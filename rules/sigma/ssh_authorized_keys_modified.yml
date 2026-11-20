@@ -1,0 +1,22 @@
+title: SSH authorized_keys modified by something other than sshd or an editor
+id: banshee-0003
+status: experimental
+description: Adding a key to authorized_keys is a quiet way to keep access. The filter lists processes that usually touch the file for good reasons; extend it for your environment.
+author: misxnthropy
+level: high
+tags:
+  - attack.persistence
+  - attack.t1098.004
+logsource:
+  category: file_event
+  product: linux
+detection:
+  target:
+    TargetFilename|endswith: '/.ssh/authorized_keys'
+  expected:
+    Image|endswith:
+      - '/sshd'
+      - '/vim'
+      - '/nano'
+      - '/ssh-copy-id'
+  condition: target and not expected

